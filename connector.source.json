@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "extensionId": "irodori.influxdb",
+  "visibility": "public",
+  "version": "0.1.0",
+  "connector": {
+    "id": "influxdb.connector",
+    "engine": "influxdb",
+    "label": "InfluxDB",
+    "aliases": [
+      "influxdb",
+      "InfluxDB"
+    ],
+    "defaultPort": 8086,
+    "wire": "influxdb",
+    "module": "influxdb.driver",
+    "features": [
+      "metadata",
+      "streaming",
+      "timeSeries",
+      "timeBuckets",
+      "latestValue",
+      "queryTemplates",
+      "visualization"
+    ]
+  },
+  "connection": {
+    "endpoint": {
+      "modes": [
+        "hostPort",
+        "connectionString"
+      ],
+      "defaultPort": 8086,
+      "fields": [
+        {
+          "id": "host",
+          "label": "Host",
+          "type": "string",
+          "profileField": "host",
+          "required": true
+        },
+        {
+          "id": "port",
+          "label": "Port",
+          "type": "number",
+          "profileField": "port",
+          "default": 8086
+        },
+        {
+          "id": "database",
+          "label": "Organization or bucket",
+          "type": "string",
+          "profileField": "database"
+        }
+      ]
+    },
+    "authMethods": [
+      "none",
+      "connectionString",
+      "userPassword",
+      "bearerToken",
+      "apiKey",
+      "clientCertificate",
+      "customDriverOptions"
+    ],
+    "tls": "optional",
+    "transports": "default",
+    "optionNamespaces": [
+      "influxdb"
+    ],
+    "customDriverOptions": true
+  },
+  "runtime": {
+    "driverLinked": false
+  },
+  "source": {
+    "knowledgeEngineStatus": "wired",
+    "adapter": "db/influx.rs"
+  },
+  "experience": {
+    "schemaVersion": 1,
+    "domains": [
+      "timeSeries"
+    ],
+    "inspiredBy": [
+      "InfluxDB Data Explorer",
+      "Flux aggregateWindow",
+      "InfluxDB tasks"
+    ],
+    "resultViews": [
+      "timeChart",
+      "table",
+      "heatmap"
+    ],
+    "objectTypes": [
+      "buckets",
+      "measurements",
+      "fields",
+      "tags",
+      "retentionPolicies",
+      "tasks"
+    ],
+    "workflows": [
+      {
+        "id": "time-range-query",
+        "label": "Time range query",
+        "description": "Start every query from a clear time range.",
+        "resultView": "timeChart",
+        "templateIds": [
+          "time-influx-aggregate-window"
+        ]
+      },
+      {
+        "id": "time-downsample",
+        "label": "Downsample window",
+        "description": "Aggregate points into a chart-friendly window.",
+        "resultView": "timeChart",
+        "templateIds": [
+          "time-influx-aggregate-window"
+        ]
+      },
+      {
+        "id": "time-latest",
+        "label": "Latest values",
+        "description": "Read latest values per series key.",
+        "resultView": "table",
+        "templateIds": [
+          "time-influx-latest"
+        ]
+      }
+    ],
+    "queryTemplates": [
+      {
+        "id": "time-influx-aggregate-window",
+        "label": "Aggregate window",
+        "language": "flux",
+        "description": "Downsample a measurement over the last hour.",
+        "insertText": "from(bucket: \"$bucket\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"$measurement\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "parameters": [
+          {
+            "id": "bucket",
+            "label": "Bucket",
+            "type": "string"
+          },
+          {
+            "id": "measurement",
+            "label": "Measurement",
+            "type": "string"
+          }
+        ],
+        "resultView": "timeChart"
+      },
+      {
+        "id": "time-influx-latest",
+        "label": "Latest values",
+        "language": "flux",
+        "description": "Return latest values for a measurement.",
+        "insertText": "from(bucket: \"$bucket\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"$measurement\")\n  |> last()",
+        "parameters": [
+          {
+            "id": "bucket",
+            "label": "Bucket",
+            "type": "string"
+          },
+          {
+            "id": "measurement",
+            "label": "Measurement",
+            "type": "string"
+          }
+        ],
+        "resultView": "table"
+      }
+    ],
+    "inspectorHints": [
+      {
+        "id": "time-field-tag",
+        "label": "Field and tag picker",
+        "description": "Group fields and tags so chart builders can choose dimensions quickly."
+      },
+      {
+        "id": "time-range",
+        "label": "Pinned time range",
+        "description": "Carry a reusable time range across Flux templates."
+      }
+    ]
+  }
+}
