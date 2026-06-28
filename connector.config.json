@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "visibility": "public",
+  "extensionId": "irodori.influxdb",
+  "connector": {
+    "id": "influxdb.connector",
+    "engine": "influxdb",
+    "label": "InfluxDB",
+    "aliases": [
+      "influxdb",
+      "InfluxDB"
+    ],
+    "defaultPort": 8086,
+    "wire": "influxdb",
+    "module": "influxdb.driver",
+    "features": [
+      "metadata",
+      "streaming"
+    ]
+  },
+  "runtime": {
+    "abi": "irodori.connector.native.v1",
+    "module": {
+      "id": "influxdb.driver",
+      "path": "dist/native",
+      "platforms": [
+        "windowsX64",
+        "windowsArm64",
+        "macosX64",
+        "macosArm64",
+        "linuxX64",
+        "linuxArm64"
+      ]
+    },
+    "crate": "irodori_extension_influxdb",
+    "entrypoints": [
+      "irodori_extension_abi_version",
+      "irodori_connector_engine_json",
+      "irodori_extension_manifest_json",
+      "irodori_connector_config_json",
+      "irodori_connector_call_json",
+      "irodori_connector_free_buffer"
+    ],
+    "supportedCalls": [
+      "health",
+      "describe",
+      "manifest",
+      "config"
+    ],
+    "driverLinked": false
+  },
+  "source": {
+    "marketplaceId": "irodori.influxdb",
+    "repository": "https://github.com/hjosugi/irodori-extension-influxdb",
+    "knowledgeEngineStatus": "wired",
+    "adapter": "db/influx.rs",
+    "adapterSha256": "f872ddef744c7ad5e9f4cee85cfba9bb364a1e81e04c1ff7d23300e1e410717c"
+  }
+}
