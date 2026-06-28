@@ -35,6 +35,23 @@ The Rust code keeps native ABI exports in `src/lib.rs`, shared buffer/JSON helpe
 | `clientCertificate` | Client certificate / mTLS | `privateKey`, `privateKeyPassphrase` |
 | `customDriverOptions` | Custom driver options | `password`, `token`, `privateKey`, `privateKeyPassphrase` |
 
+## Experience Metadata
+
+- Domains: `timeSeries`
+- Result views: `timeChart`, `table`, `heatmap`
+- Inspired by: `InfluxDB Data Explorer`, `Flux aggregateWindow`, `InfluxDB tasks`
+
+| Workflow | Result view | Templates |
+|---|---|---|
+| Time range query | timeChart | time-influx-aggregate-window |
+| Downsample window | timeChart | time-influx-aggregate-window |
+| Latest values | table | time-influx-latest |
+
+| Template | Label | Language | Result view |
+|---|---|---|---|
+| `time-influx-aggregate-window` | Aggregate window | `flux` | `timeChart` |
+| `time-influx-latest` | Latest values | `flux` | `table` |
+
 ## ABI Calls
 
 The scaffold handles these JSON requests today:

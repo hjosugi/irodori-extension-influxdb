@@ -34,7 +34,12 @@
         "module": "influxdb.driver",
         "features": [
           "metadata",
-          "streaming"
+          "streaming",
+          "timeSeries",
+          "timeBuckets",
+          "latestValue",
+          "queryTemplates",
+          "visualization"
         ],
         "connection": {
           "schemaVersion": 1,
