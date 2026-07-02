@@ -424,7 +424,7 @@
         "linuxArm64"
       ]
     },
-    "crate": "irodori_extension_influxdb",
+    "crate": "",
     "entrypoints": [
       "irodori_extension_abi_version",
       "irodori_connector_engine_json",
@@ -437,13 +437,17 @@
       "health",
       "describe",
       "manifest",
-      "config"
+      "config",
+      "connect",
+      "query",
+      "metadata",
+      "close"
     ],
-    "driverLinked": false
+    "driverLinked": true
   },
   "source": {
     "marketplaceId": "irodori.influxdb",
-    "repository": "https://github.com/hjosugi/irodori-extension-influxdb",
+    "repository": "https://github.com/hjosugi/",
     "knowledgeEngineStatus": "wired",
     "adapter": "db/influx.rs",
     "adapterSha256": "f872ddef744c7ad5e9f4cee85cfba9bb364a1e81e04c1ff7d23300e1e410717c",
@@ -464,7 +468,7 @@
         "kind": "desktop-db-contract",
         "path": "apps/desktop/src-tauri/src/db/profile.rs",
         "destination": "native/source/irodori-table/apps/desktop/src-tauri/src/db/profile.rs",
-        "sha256": "6ea079bd8fd74f687e0a549cbc3b3e97009fa5f529839831a79b8e4d69999446"
+        "sha256": "a4ac432937eb051c4b3434751b5153b33974b8294a3521745ed021da377c458f"
       },
       {
         "kind": "desktop-db-contract",

@@ -11,12 +11,12 @@ This connector is listed in the public Irodori extension marketplace.
 - Wire: `influxdb`
 - Default port: `8086`
 - Native ABI: `irodori.connector.native.v1`
-- Driver linked: `false`
+- Driver linked: `true`
 
 A desktop adapter source snapshot is staged in `native/source/` from `db/influx.rs`.
 
 Connector metadata lives in `connector.config.json` and `irodori.extension.json`.
-The Rust code keeps native ABI exports in `src/lib.rs`, shared buffer/JSON helpers in `src/abi.rs`, and metadata-only behavior in `src/stub.rs` until the engine driver is linked.
+The Rust code keeps native ABI exports in `src/lib.rs`, shared buffer/JSON helpers in `src/abi.rs`, and the InfluxDB HTTP driver in `src/driver.rs`.
 
 ## Connection Metadata
 
@@ -54,7 +54,7 @@ The Rust code keeps native ABI exports in `src/lib.rs`, shared buffer/JSON helpe
 
 ## ABI Calls
 
-The scaffold handles these JSON requests today:
+The native driver handles these JSON requests:
 
 | Method | Response |
 |---|---|
@@ -62,9 +62,12 @@ The scaffold handles these JSON requests today:
 | `describe` / `capabilities` | Embedded manifest and connector config. |
 | `manifest` | Raw `irodori.extension.json`. |
 | `config` | Raw `connector.config.json`. |
+| `connect` | Builds the endpoint from URL or host/port, validates `/ping`, and stores the connection. |
+| `query` | Executes InfluxDB 3 SQL via `/api/v3/query` and returns table-shaped rows. |
+| `metadata` | Reads `information_schema.columns` and returns schema/object metadata. |
+| `close` | Removes the stored connection. |
 
-
-Driver operations such as `connect`, `query`, and `metadata` intentionally return `connector.driverNotLinked` until the engine implementation is connected.
+The implementation currently supports `queryType: "sql"` for InfluxDB 3 compatible servers. Flux templates remain catalog metadata for clients that support Flux execution elsewhere.
 
 ## Development
 
