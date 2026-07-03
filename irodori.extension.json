@@ -3,11 +3,11 @@
   "manifestVersion": 1,
   "id": "irodori.influxdb",
   "name": "InfluxDB Connector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "irodori",
   "description": "InfluxDB Connector contributes the InfluxDB database connector through the native connector ABI.",
   "license": "MIT OR 0BSD",
-  "repository": "https://github.com/hjosugi/",
+  "repository": "https://github.com/hjosugi/irodori-extension-influxdb",
   "apiVersion": "0.1",
   "runtime": "native",
   "entry": "dist/native",
@@ -216,6 +216,22 @@
                 {
                   "id": "apiKey",
                   "label": "API key",
+                  "type": "secret",
+                  "secretPurpose": "token"
+                }
+              ]
+            },
+            {
+              "id": "oauthAccessToken",
+              "label": "OAuth 2.0 access token",
+              "kind": "token",
+              "secretPurposes": [
+                "token"
+              ],
+              "fields": [
+                {
+                  "id": "token",
+                  "label": "Token",
                   "type": "secret",
                   "secretPurpose": "token"
                 }

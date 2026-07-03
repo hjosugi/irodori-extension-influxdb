@@ -1,79 +1,90 @@
 # InfluxDB Connector
 
-Adds InfluxDB connectivity as an installable connector extension.
+Native Irodori Table connector extension for InfluxDB.
 
-This connector is listed in the public Irodori extension marketplace.
+This crate packages the connector metadata, native ABI exports, and driver implementation used by the Irodori extension marketplace.
 
 ## Connector
 
 - Extension ID: `irodori.influxdb`
 - Engine ID: `influxdb`
-- Wire: `influxdb`
+- Wire protocol: `influxdb`
 - Default port: `8086`
 - Native ABI: `irodori.connector.native.v1`
-- Driver linked: `true`
+- Driver linked: `yes`
+- Marketplace visibility: `public`
+- Package version: `0.1.1`
 
-A desktop adapter source snapshot is staged in `native/source/` from `db/influx.rs`.
+The package includes a desktop adapter source snapshot from `db/influx.rs`.
 
 Connector metadata lives in `connector.config.json` and `irodori.extension.json`.
-The Rust code keeps native ABI exports in `src/lib.rs`, shared buffer/JSON helpers in `src/abi.rs`, and the InfluxDB HTTP driver in `src/driver.rs`.
+The Rust crate exports the native ABI from `src/lib.rs`, uses `irodori-connector-abi` for shared JSON/buffer helpers, and keeps connector behavior in `src/driver.rs`.
 
 ## Connection Metadata
 
 - Endpoint modes: `hostPort`, `connectionString`
 - Transport modes: `direct`, `sshTunnel`, `socks5Proxy`, `httpConnectProxy`, `proxyChain`
-- TLS supported: `true`
-- Custom driver options: `true`
+- TLS supported: `yes`
+- TLS required by default: `no`
+- Custom driver options: `yes`
 
-| Auth method | Label | Secret purposes |
-|---|---|---|
-| `none` | No authentication | none |
-| `connectionString` | Connection string / DSN | none |
-| `userPassword` | User/password | `password` |
-| `bearerToken` | Bearer token | `token` |
-| `apiKey` | API key | `token` |
-| `clientCertificate` | Client certificate / mTLS | `privateKey`, `privateKeyPassphrase` |
-| `customDriverOptions` | Custom driver options | `password`, `token`, `privateKey`, `privateKeyPassphrase` |
+### Endpoint Fields
+
+| Field | Label | Type | Required |
+| --- | --- | --- | --- |
+| `host` | Host | `string` | yes |
+| `port` | Port | `number` | no |
+| `database` | Organization or bucket | `string` | no |
+
+## Authentication
+
+The connector advertises these authentication modes so clients can render the right credential fields. Driver-specific or provider-specific values can still be passed through `options` when needed.
+
+| Auth method | Label | Kind | Secret purposes |
+| --- | --- | --- | --- |
+| `none` | No authentication | `none` | none |
+| `connectionString` | Connection string / DSN | `connectionString` | none |
+| `userPassword` | User/password | `userPassword` | `password` |
+| `bearerToken` | Bearer token | `token` | `token` |
+| `apiKey` | API key | `apiKey` | `token` |
+| `oauthAccessToken` | OAuth 2.0 access token | `token` | `token` |
+| `clientCertificate` | Client certificate / mTLS | `certificate` | `privateKey`, `privateKeyPassphrase` |
+| `customDriverOptions` | Custom driver options | `custom` | `password`, `token`, `privateKey`, `privateKeyPassphrase` |
 
 ## Experience Metadata
 
 - Domains: `timeSeries`
 - Result views: `timeChart`, `table`, `heatmap`
-- Inspired by: `InfluxDB Data Explorer`, `Flux aggregateWindow`, `InfluxDB tasks`
+- Object types: `buckets`, `measurements`, `fields`, `tags`, `retentionPolicies`, `tasks`
+- Inspired by: InfluxDB Data Explorer, Flux aggregateWindow, InfluxDB tasks
 
 | Workflow | Result view | Templates |
-|---|---|---|
-| Time range query | timeChart | time-influx-aggregate-window |
-| Downsample window | timeChart | time-influx-aggregate-window |
-| Latest values | table | time-influx-latest |
+| --- | --- | --- |
+| Time range query | `timeChart` | `time-influx-aggregate-window` |
+| Downsample window | `timeChart` | `time-influx-aggregate-window` |
+| Latest values | `table` | `time-influx-latest` |
 
 | Template | Label | Language | Result view |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `time-influx-aggregate-window` | Aggregate window | `flux` | `timeChart` |
 | `time-influx-latest` | Latest values | `flux` | `table` |
 
-## ABI Calls
-
-The native driver handles these JSON requests:
+## Native ABI Calls
 
 | Method | Response |
-|---|---|
-| `health` / `ping` | Connector health, engine id, ABI version, and driver link status. |
-| `describe` / `capabilities` | Embedded manifest and connector config. |
-| `manifest` | Raw `irodori.extension.json`. |
-| `config` | Raw `connector.config.json`. |
-| `connect` | Builds the endpoint from URL or host/port, validates `/ping`, and stores the connection. |
-| `query` | Executes InfluxDB 3 SQL via `/api/v3/query` and returns table-shaped rows. |
-| `metadata` | Reads `information_schema.columns` and returns schema/object metadata. |
-| `close` | Removes the stored connection. |
-
-The implementation currently supports `queryType: "sql"` for InfluxDB 3 compatible servers. Flux templates remain catalog metadata for clients that support Flux execution elsewhere.
+| --- | --- |
+| `health` | Returns connector health, engine id, ABI version, and driver status. |
+| `describe` | Returns the embedded manifest and connector config. |
+| `manifest` | Returns raw `irodori.extension.json`. |
+| `config` | Returns raw `connector.config.json`. |
+| `connect` | Opens and validates a native connector connection. |
+| `query` | Runs a connector query and returns structured rows or JSON results. |
+| `metadata` | Reads schemas, tables, columns, indexes, collections, or equivalent metadata. |
+| `close` | Closes and removes a cached native connection. |
 
 ## Development
 
-
-Generated extension repositories share `../target` across sibling repositories so Rust dependencies are compiled once per checkout. DuckDB and MotherDuck are driver-linked by default; set `IRODORI_CONNECTOR_LINK_DUCKDB=0` only when you need metadata-only DuckDB-compatible scaffolds.
-
+All extension crates in this checkout share `../target` so dependencies compile once across sibling repositories.
 
 ```sh
 make check

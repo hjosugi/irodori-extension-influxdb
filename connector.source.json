@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "extensionId": "irodori.influxdb",
   "visibility": "public",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "connector": {
     "id": "influxdb.connector",
     "engine": "influxdb",
@@ -60,6 +60,7 @@
       "userPassword",
       "bearerToken",
       "apiKey",
+      "oauthAccessToken",
       "clientCertificate",
       "customDriverOptions"
     ],
